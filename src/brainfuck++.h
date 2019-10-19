@@ -48,6 +48,7 @@ void init_code_pos();
 void init_file(char* text);
 
 void start_programm();
+void stop_programm(void);
 
 void add_code(void(*code)(), char text);
 void add_command(void(*command)(),int8_t op);

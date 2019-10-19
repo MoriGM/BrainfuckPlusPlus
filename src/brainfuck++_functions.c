@@ -25,8 +25,10 @@ int remove_code_pos(int number)
 		if (code_pos[i]->number == number)
 		{
 			number = code_pos[i]->pos;
-			code_pos[i] = code_pos[(code_pos_count - 1)];
-			code_pos[(code_pos_count--)] = NULL;
+			code_pos_count--;
+			code_pos[i] = code_pos[code_pos_count];
+			free(code_pos[code_pos_count]);
+			code_pos[code_pos_count] = NULL;
 			return number;
 		}
 	}

@@ -38,7 +38,27 @@ int main(int argc, char** argv)
 	}
 	else
 		printf("%s <file>\n", argv[0]);
+	
+	stop_programm();
+
 	return EXIT_SUCCESS;
+}
+
+void stop_programm(void)
+{
+	for (int i = 0;i < code_map_count;i++)
+		free(code_maps[i]);
+	free(code_maps);
+
+	for (int i = 0;i < code_pos_count;i++)
+		free(code_pos[i]);
+	free(code_pos);
+
+	for (int i = 0;i < code_command_count;i++)
+		free(code_commands[i]);
+	free(code_commands);
+
+	free(code_file);
 }
 
 void init_stack()
@@ -112,19 +132,19 @@ void init_file(char* text)
 		exit(EXIT_SUCCESS);
 		return;
 	}
-	code_file = malloc(sizeof(char) * 10000);
-	int code_len = 0;
-	do
-	{
-		char c;
-		fscanf(file, "%c", &c);
-		if (feof(file))
-			break;
-		if (allowed_code(c))
-			code_file[code_len++] = c;
-	} 
-	while(!feof(file));
+	fseek(file, 0, SEEK_END);
+	long size = ftell(file), code_len = 0;
+	rewind(file);
+	char* tmp = malloc(sizeof(char) * (size));
+	fread(tmp, sizeof(char), size, file);
+	
+	for (int i = 0; i < size;i++) if (allowed_code(tmp[i])) code_len++;
+	code_file = malloc(sizeof(char) * (code_len + 1));
+	code_len = 0;
+	for (int i = 0;i < size;i++) if (allowed_code(tmp[i])) code_file[code_len++] = tmp[i];
+	free(tmp);
 	code_file[code_len] = '\0';
+	fclose(file);
 }
 
 void add_code(void(*code)(), char text)
